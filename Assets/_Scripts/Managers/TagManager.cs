@@ -8,4 +8,10 @@ namespace RollerBall
     {
 
     }
+
+    public class ResourceTags
+    {
+        public static string LEVELS = "Levels";
+        public static string PLAYER = "Player";
+    }
 }

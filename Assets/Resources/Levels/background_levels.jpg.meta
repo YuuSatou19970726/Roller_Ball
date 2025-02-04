@@ -136,7 +136,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: type_0
+      name: Level_00
       rect:
         serializedVersion: 2
         x: 242
@@ -157,7 +157,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_1
+      name: Level_01
       rect:
         serializedVersion: 2
         x: 2054
@@ -178,7 +178,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_2
+      name: Level_02
       rect:
         serializedVersion: 2
         x: 3920
@@ -199,7 +199,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_3
+      name: Level_03
       rect:
         serializedVersion: 2
         x: 5802
@@ -220,7 +220,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_4
+      name: Level_04
       rect:
         serializedVersion: 2
         x: 242
@@ -241,7 +241,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_5
+      name: Level_05
       rect:
         serializedVersion: 2
         x: 2054
@@ -262,7 +262,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_6
+      name: Level_06
       rect:
         serializedVersion: 2
         x: 3920
@@ -283,7 +283,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: type_7
+      name: Level_07
       rect:
         serializedVersion: 2
         x: 5802
@@ -314,14 +314,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      type_0: 1282960072
-      type_1: 2132539992
-      type_2: -934012794
-      type_3: 1116127421
-      type_4: 571764510
-      type_5: 1138003853
-      type_6: -1449791264
-      type_7: -1192466334
+      Level_00: 1282960072
+      Level_01: 2132539992
+      Level_02: -934012794
+      Level_03: 1116127421
+      Level_04: 571764510
+      Level_05: 1138003853
+      Level_06: -1449791264
+      Level_07: -1192466334
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
