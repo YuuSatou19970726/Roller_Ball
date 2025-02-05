@@ -6,11 +6,26 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+    private static LevelManager instance;
+    public static LevelManager Instance => instance;
+
     public GameObject pauseMenu;
+
+    private float startTime;
+    [SerializeField]
+    private float silverTime;
+    [SerializeField]
+    private float goldTime;
 
     private void Start()
     {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+
         pauseMenu.SetActive(false);
+        startTime = Time.time;
     }
 
     public void TogglePaseMenu()
@@ -26,5 +41,28 @@ public class LevelManager : MonoBehaviour
     public void EventResume()
     {
         pauseMenu.SetActive(false);
+    }
+
+    public void EventVictory()
+    {
+        float duration = Time.time - startTime;
+
+        if (duration < goldTime)
+            GameManager.Instance.currency += 50;
+        else if (duration < silverTime)
+            GameManager.Instance.currency += 25;
+        else
+            GameManager.Instance.currency += 10;
+
+        GameManager.Instance.SavePlayerPrefs();
+
+        string saveString = "";
+        saveString += duration.ToString();
+        saveString += '&';
+        saveString += silverTime.ToString();
+        saveString += '&';
+        saveString += goldTime.ToString();
+        PlayerPrefs.SetString(SceneManager.GetActiveScene().name, saveString);
+        SceneManager.LoadScene(SceneTags.MAIN_MENU);
     }
 }

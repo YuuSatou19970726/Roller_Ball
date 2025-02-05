@@ -3,52 +3,79 @@ using System.Collections.Generic;
 using RollerBall;
 using UnityEngine;
 
-public class Motor : CustomMonobehaviour
+namespace RollerBall
 {
-    private float moveSpeed = 5.0f;
-    private float drag = 0.5f;
-    private float terminalRotationSpeed = 25.0f;
-
-    private Rigidbody controller;
-    private Transform camTransform;
-
-    // Start is called before the first frame update
-    protected override void Start()
+    public class Motor : CustomMonobehaviour
     {
-        this.controller = GetComponent<Rigidbody>();
-        this.controller.maxAngularVelocity = terminalRotationSpeed;
-        controller.drag = drag;
-    }
+        private float moveSpeed = 5.0f;
+        private float drag = 0.5f;
+        private float terminalRotationSpeed = 25.0f;
+        private VirtualJoystick moveJoystick;
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        Movement();
-    }
+        private float boostSpeed = 5.0f;
+        private float boostCooldown = 2.0f;
+        private float lastBoost;
 
-    protected override void LoadComponents()
-    {
-        LoadCameraTransform();
-    }
+        private Rigidbody controller;
+        private Transform camTransform;
 
-    private void Movement()
-    {
-        Vector3 dir = Vector3.zero;
-        dir.x = Input.GetAxis(AxisTags.HORIZONTAL);
-        dir.z = Input.GetAxis(AxisTags.VERTICAL);
+        // Start is called before the first frame update
+        protected override void Start()
+        {
+            this.lastBoost = Time.time - boostCooldown;
 
-        if (dir.magnitude > 1)
-            dir.Normalize();
+            this.controller = GetComponent<Rigidbody>();
+            this.controller.maxAngularVelocity = terminalRotationSpeed;
+            controller.drag = drag;
+        }
 
-        Vector3 rotateDir = camTransform.TransformDirection(dir);
-        rotateDir = new Vector3(rotateDir.x, 0, rotateDir.z);
-        rotateDir = rotateDir.normalized * dir.magnitude;
+        // Update is called once per frame
+        protected override void Update()
+        {
+            Movement();
+        }
 
-        this.controller.AddForce(rotateDir * moveSpeed);
-    }
+        protected override void LoadComponents()
+        {
+            LoadCameraTransform();
+            LoadVirtualJoystick();
+        }
 
-    private void LoadCameraTransform()
-    {
-        camTransform = Camera.main.transform;
+        private void Movement()
+        {
+            Vector3 dir = Vector3.zero;
+            // dir.x = Input.GetAxis(AxisTags.HORIZONTAL);
+            // dir.z = Input.GetAxis(AxisTags.VERTICAL);
+
+            if (moveJoystick.InputDirection != Vector3.zero)
+            {
+                dir = moveJoystick.InputDirection;
+            }
+
+            if (dir.magnitude > 1)
+                dir.Normalize();
+
+            Vector3 rotateDir = camTransform.TransformDirection(dir);
+            rotateDir = new Vector3(rotateDir.x, 0, rotateDir.z);
+            rotateDir = rotateDir.normalized * dir.magnitude;
+
+            this.controller.AddForce(rotateDir * moveSpeed);
+        }
+
+        public void Boost()
+        {
+            if (Time.time - lastBoost > boostCooldown)
+                this.controller.AddForce(controller.velocity.normalized * boostSpeed, ForceMode.VelocityChange);
+        }
+
+        private void LoadCameraTransform()
+        {
+            camTransform = Camera.main.transform;
+        }
+
+        private void LoadVirtualJoystick()
+        {
+            moveJoystick = FindAnyObjectByType<VirtualJoystick>();
+        }
     }
 }
