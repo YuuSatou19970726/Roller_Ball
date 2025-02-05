@@ -18,6 +18,7 @@ namespace RollerBall
         private GameObject shopButtonPrefab;
         [SerializeField]
         private GameObject shopButtonContainer;
+        private UIManager uIManager;
 
         public Material playerMaterial;
 
@@ -27,11 +28,13 @@ namespace RollerBall
         protected override void LoadComponents()
         {
             cameraTransform = Camera.main.transform;
+            LoadUIManager();
         }
 
         protected override void Start()
         {
-            ChangePlayerSkin(5);
+            ChangePlayerSkin(GameManager.Instance.currentSkinIndex);
+            this.uIManager.SetCurrency(GameManager.Instance.currency);
             ThumnailSprite();
             TextureSprite();
         }
@@ -73,31 +76,56 @@ namespace RollerBall
 
                 int index = textureIndex;
                 container.GetComponent<Button>().onClick.AddListener(() => ChangePlayerSkin(index));
+                if ((GameManager.Instance.skinAvailability & 1 << index) == 1 << index)
+                    container.transform.GetChild(0).gameObject.SetActive(false);
                 textureIndex++;
             }
         }
 
         private void ChangePlayerSkin(int index)
         {
-            float x = (index % 4) * 0.25f;
-            float y = ((int)index / 4) * 0.25f;
+            if ((GameManager.Instance.skinAvailability & 1 << index) == 1 << index)
+            {
+                float x = (index % 4) * 0.25f;
+                float y = ((int)index / 4) * 0.25f;
 
-            if (y == 0.0f)
-                y = 0.75f;
-            else if (y == 0.25f)
-                y = 0.5f;
-            else if (y == 0.5f)
-                y = 0.25f;
-            else if (y == 0.75f)
-                y = 0f;
+                if (y == 0.0f)
+                    y = 0.75f;
+                else if (y == 0.25f)
+                    y = 0.5f;
+                else if (y == 0.5f)
+                    y = 0.25f;
+                else if (y == 0.75f)
+                    y = 0f;
 
-            this.playerMaterial.SetTextureOffset("_MainTex", new Vector2(x, y));
+                this.playerMaterial.SetTextureOffset("_MainTex", new Vector2(x, y));
+                GameManager.Instance.currentSkinIndex = index;
+                GameManager.Instance.SavePlayerPrefs();
+            }
+            else
+            {
+                int cost = 150;
+                if (GameManager.Instance.currency >= cost)
+                {
+                    GameManager.Instance.currency -= cost;
+                    GameManager.Instance.skinAvailability += 1 << index;
+                    GameManager.Instance.SavePlayerPrefs();
+                    uIManager.SetCurrency(GameManager.Instance.currency);
+                    shopButtonContainer.transform.GetChild(index).GetChild(0).gameObject.SetActive(false);
+                    ChangePlayerSkin(index);
+                }
+            }
         }
 
         private void LoadLevel(string sceneName)
         {
             // Debug.Log(sceneName);
             SceneManager.LoadScene(sceneName);
+        }
+
+        private void LoadUIManager()
+        {
+            uIManager = FindAnyObjectByType<UIManager>();
         }
 
         public void LookAtMenu(Transform menuTransform)
