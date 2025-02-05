@@ -25,6 +25,13 @@ namespace RollerBall
         private Transform cameraTransform;
         private Transform cameraDesiredLookAt;
 
+        private int[] costs = {
+            0, 150, 150, 150,
+            300, 300, 300, 300,
+            500, 500, 500, 500,
+            1000, 1250, 1500, 2000
+        };
+
         protected override void LoadComponents()
         {
             cameraTransform = Camera.main.transform;
@@ -52,13 +59,16 @@ namespace RollerBall
         {
             Sprite[] thumbnails = Resources.LoadAll<Sprite>(ResourceTags.LEVELS);
 
-            foreach (Sprite thumnail in thumbnails)
+            foreach (Sprite thumbnail in thumbnails)
             {
                 GameObject container = Instantiate(levelButtonPrefab);
-                container.GetComponent<Image>().sprite = thumnail;
+                container.GetComponent<Image>().sprite = thumbnail;
                 container.transform.SetParent(levelButtonContainer.transform, false);
+                LevelData level = new LevelData(thumbnail.name);
+                container.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
+                (level.BestTime != 0.0f) ? level.BestTime.ToString("f") : "LOCKED";
 
-                string sceneName = thumnail.name;
+                string sceneName = thumbnail.name;
                 container.GetComponent<Button>().onClick.AddListener(() => LoadLevel(sceneName));
             }
         }
@@ -76,6 +86,8 @@ namespace RollerBall
 
                 int index = textureIndex;
                 container.GetComponent<Button>().onClick.AddListener(() => ChangePlayerSkin(index));
+                container.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = costs[index].ToString();
+                // container.transform.GetComponentInChildren<Text>()
                 if ((GameManager.Instance.skinAvailability & 1 << index) == 1 << index)
                     container.transform.GetChild(0).gameObject.SetActive(false);
                 textureIndex++;
@@ -104,7 +116,7 @@ namespace RollerBall
             }
             else
             {
-                int cost = 150;
+                int cost = costs[index];
                 if (GameManager.Instance.currency >= cost)
                 {
                     GameManager.Instance.currency -= cost;
