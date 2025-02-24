@@ -4,12 +4,15 @@ using RollerBall;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour
+public class LevelManager : CustomMonobehaviour
 {
     private static LevelManager instance;
     public static LevelManager Instance => instance;
 
     public GameObject pauseMenu;
+    [SerializeField]
+    private Transform respawnSpoint;
+    private GameObject player;
 
     private float startTime;
     [SerializeField]
@@ -17,20 +20,38 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private float goldTime;
 
-    private void Start()
+    protected override void Start()
     {
         if (instance == null)
             instance = this;
         else
             Destroy(gameObject);
 
-        pauseMenu.SetActive(false);
-        startTime = Time.time;
+        this.pauseMenu.SetActive(false);
+        this.startTime = Time.time;
+
+        this.player.transform.position = this.respawnSpoint.position;
+    }
+
+    protected override void Update()
+    {
+        if (player.transform.position.y < -10.0f)
+            GameOver();
+    }
+
+    protected override void LoadComponents()
+    {
+        LoadGameObjects();
+    }
+
+    private void LoadGameObjects()
+    {
+        this.player = GameObject.FindGameObjectWithTag(Tags.PLAYER);
     }
 
     public void TogglePaseMenu()
     {
-        pauseMenu.SetActive(!pauseMenu.activeSelf);
+        this.pauseMenu.SetActive(!pauseMenu.activeSelf);
     }
 
     public void ToMenu()
@@ -40,11 +61,13 @@ public class LevelManager : MonoBehaviour
 
     public void EventResume()
     {
-        pauseMenu.SetActive(false);
+        this.pauseMenu.SetActive(false);
     }
 
     public void EventVictory()
     {
+        if (GameManager.Instance == null) return;
+
         float duration = Time.time - startTime;
 
         if (duration < goldTime)
@@ -66,5 +89,13 @@ public class LevelManager : MonoBehaviour
         saveString += goldTime.ToString();
         PlayerPrefs.SetString(SceneManager.GetActiveScene().name, saveString);
         SceneManager.LoadScene(SceneTags.MAIN_MENU);
+    }
+
+    public void GameOver()
+    {
+        player.transform.position = this.respawnSpoint.position;
+        Rigidbody rigidbody = player.GetComponent<Rigidbody>();
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
     }
 }

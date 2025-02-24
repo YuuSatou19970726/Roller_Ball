@@ -25,6 +25,8 @@ namespace RollerBall
         private Transform cameraTransform;
         private Transform cameraDesiredLookAt;
 
+        private bool nextLevelLocked = false;
+
         private int[] costs = {
             0, 150, 150, 150,
             300, 300, 300, 300,
@@ -67,6 +69,12 @@ namespace RollerBall
                 LevelData level = new LevelData(thumbnail.name);
                 container.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
                 (level.BestTime != 0.0f) ? level.BestTime.ToString("f") : "LOCKED";
+
+                container.transform.GetChild(1).GetComponent<Image>().enabled = nextLevelLocked;
+                container.GetComponent<Button>().interactable = !nextLevelLocked;
+
+                if (level.BestTime == 0.0f)
+                    nextLevelLocked = true;
 
                 string sceneName = thumbnail.name;
                 container.GetComponent<Button>().onClick.AddListener(() => LoadLevel(sceneName));

@@ -44,8 +44,8 @@ namespace RollerBall
         private void Movement()
         {
             Vector3 dir = Vector3.zero;
-            // dir.x = Input.GetAxis(AxisTags.HORIZONTAL);
-            // dir.z = Input.GetAxis(AxisTags.VERTICAL);
+            dir.x = Input.GetAxis(AxisTags.HORIZONTAL);
+            dir.z = Input.GetAxis(AxisTags.VERTICAL);
 
             if (moveJoystick.InputDirection != Vector3.zero)
             {
@@ -65,7 +65,10 @@ namespace RollerBall
         public void Boost()
         {
             if (Time.time - lastBoost > boostCooldown)
+            {
+                lastBoost = Time.time;
                 this.controller.AddForce(controller.velocity.normalized * boostSpeed, ForceMode.VelocityChange);
+            }
         }
 
         private void LoadCameraTransform()
