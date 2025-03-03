@@ -64,6 +64,11 @@ public class LevelManager : CustomMonobehaviour
         this.pauseMenu.SetActive(false);
     }
 
+    public void EventRestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
     public void EventVictory()
     {
         if (GameManager.Instance == null) return;

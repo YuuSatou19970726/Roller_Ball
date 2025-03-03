@@ -67,8 +67,12 @@ namespace RollerBall
                 container.GetComponent<Image>().sprite = thumbnail;
                 container.transform.SetParent(levelButtonContainer.transform, false);
                 LevelData level = new LevelData(thumbnail.name);
+
+                string minutes = ((int)level.BestTime / 60).ToString("00");
+                string seconds = (level.BestTime % 60).ToString("00");
+
                 container.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
-                (level.BestTime != 0.0f) ? level.BestTime.ToString("f") : "LOCKED";
+                (level.BestTime != 0.0f) ? minutes + ":" + seconds : "LOCKED";
 
                 container.transform.GetChild(1).GetComponent<Image>().enabled = nextLevelLocked;
                 container.GetComponent<Button>().interactable = !nextLevelLocked;
