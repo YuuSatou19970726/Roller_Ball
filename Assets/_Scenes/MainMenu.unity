@@ -249,7 +249,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5, y: -10}
+  m_AnchoredPosition: {x: 5, y: -5}
   m_SizeDelta: {x: 250, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &115061147
@@ -2927,6 +2927,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03da3655fb9c9da4383266a9b347a3b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  border:
+  - {fileID: 21300000, guid: ba75b94118048394f8be82e0b0e464ff, type: 3}
+  - {fileID: 21300000, guid: 9749eabbafe22c843b29118fe6a9fce2, type: 3}
+  - {fileID: 21300000, guid: 38539777b308cf4479f38c4ae9194998, type: 3}
   levelButtonPrefab: {fileID: 820497910326251273, guid: 361c43f0275983947b3a6bfc7e7eecff, type: 3}
   levelButtonContainer: {fileID: 115061144}
   shopButtonPrefab: {fileID: 7413488520059272726, guid: 48c124552b240404299e6a594e544270, type: 3}

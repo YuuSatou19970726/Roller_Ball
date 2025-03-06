@@ -9,6 +9,9 @@ namespace RollerBall
     public class MainMenu : CustomMonobehaviour
     {
         private const float CAMERA_TRANSITION_SPEED = 3.0F;
+
+        [SerializeField]
+        private Sprite[] border;
         [SerializeField]
         private GameObject levelButtonPrefab;
         [SerializeField]
@@ -71,11 +74,33 @@ namespace RollerBall
                 string minutes = ((int)level.BestTime / 60).ToString("00");
                 string seconds = (level.BestTime % 60).ToString("00");
 
-                container.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
+                GameObject bottomPanel = container.transform.GetChild(0).GetChild(0).gameObject;
+
+                bottomPanel.GetComponent<Text>().text =
                 (level.BestTime != 0.0f) ? minutes + ":" + seconds : "LOCKED";
 
                 container.transform.GetChild(1).GetComponent<Image>().enabled = nextLevelLocked;
                 container.GetComponent<Button>().interactable = !nextLevelLocked;
+
+                if (level.BestTime == 0.0f)
+                {
+                    this.nextLevelLocked = true;
+                }
+                else if (level.BestTime < level.GoldTime)
+                {
+                    // Put the gold border
+                    bottomPanel.GetComponentInParent<Image>().sprite = this.border[2];
+                }
+                else if (level.BestTime < level.SilverTime)
+                {
+                    // Put the silver border
+                    bottomPanel.GetComponentInParent<Image>().sprite = this.border[1];
+                }
+                else
+                {
+                    // Put the bronze border
+                    bottomPanel.GetComponentInParent<Image>().sprite = this.border[0];
+                }
 
                 if (level.BestTime == 0.0f)
                     nextLevelLocked = true;
