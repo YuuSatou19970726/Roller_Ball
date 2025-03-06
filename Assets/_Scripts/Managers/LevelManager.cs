@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using RollerBall;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelManager : CustomMonobehaviour
 {
@@ -12,9 +13,12 @@ public class LevelManager : CustomMonobehaviour
     public GameObject pauseMenu;
     [SerializeField]
     private Transform respawnSpoint;
+    [SerializeField]
+    private Text timerText;
     private GameObject player;
 
     private float startTime;
+    private float levelDuration;
     [SerializeField]
     private float silverTime;
     [SerializeField]
@@ -37,6 +41,8 @@ public class LevelManager : CustomMonobehaviour
     {
         if (player.transform.position.y < -10.0f)
             GameOver();
+
+        UpdateTimer();
     }
 
     protected override void LoadComponents()
@@ -44,28 +50,45 @@ public class LevelManager : CustomMonobehaviour
         LoadGameObjects();
     }
 
+    #region Private
     private void LoadGameObjects()
     {
         this.player = GameObject.FindGameObjectWithTag(Tags.PLAYER);
     }
 
+    private void UpdateTimer()
+    {
+        levelDuration = Time.time - startTime;
+        string minutes = ((int)this.levelDuration / 60).ToString("00");
+        string seconds = (this.levelDuration % 60).ToString("00.00");
+        this.timerText.text = minutes + ":" + seconds;
+    }
+    #endregion
+
+    #region public
+
+
     public void TogglePaseMenu()
     {
         this.pauseMenu.SetActive(!pauseMenu.activeSelf);
+        Time.timeScale = this.pauseMenu.activeSelf ? 0 : 1;
     }
 
     public void ToMenu()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneTags.MAIN_MENU);
     }
 
     public void EventResume()
     {
+        Time.timeScale = 1;
         this.pauseMenu.SetActive(false);
     }
 
     public void EventRestartLevel()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -73,11 +96,9 @@ public class LevelManager : CustomMonobehaviour
     {
         if (GameManager.Instance == null) return;
 
-        float duration = Time.time - startTime;
-
-        if (duration < goldTime)
+        if (this.levelDuration < goldTime)
             GameManager.Instance.currency += 50;
-        else if (duration < silverTime)
+        else if (this.levelDuration < silverTime)
             GameManager.Instance.currency += 25;
         else
             GameManager.Instance.currency += 10;
@@ -87,7 +108,10 @@ public class LevelManager : CustomMonobehaviour
         string saveString = "";
         LevelData level = new LevelData(SceneManager.GetActiveScene().name);
 
-        saveString += (level.BestTime > duration || level.BestTime == 0.0f) ? duration.ToString() : level.BestTime.ToString();
+        saveString += (level.BestTime > this.levelDuration || level.BestTime == 0.0f)
+        ? this.levelDuration.ToString()
+        : level.BestTime.ToString();
+
         saveString += '&';
         saveString += silverTime.ToString();
         saveString += '&';
@@ -98,9 +122,11 @@ public class LevelManager : CustomMonobehaviour
 
     public void GameOver()
     {
-        player.transform.position = this.respawnSpoint.position;
-        Rigidbody rigidbody = player.GetComponent<Rigidbody>();
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.angularVelocity = Vector3.zero;
+        // player.transform.position = this.respawnSpoint.position;
+        // Rigidbody rigidbody = player.GetComponent<Rigidbody>();
+        // rigidbody.velocity = Vector3.zero;
+        // rigidbody.angularVelocity = Vector3.zero;
+        EventRestartLevel();
     }
+    #endregion
 }
