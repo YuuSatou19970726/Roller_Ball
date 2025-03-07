@@ -7,6 +7,8 @@ public class CameraMotor : CustomMonobehaviour
 {
     private const float TIME_BEFORE_START = 2.5f;
     private Transform lookAt;
+    [SerializeField]
+    private RectTransform virtualJoystickSpace;
 
     private Vector3 desiredPosition;
     private Vector3 offset;
@@ -19,6 +21,7 @@ public class CameraMotor : CustomMonobehaviour
     private float yOffset = 3.5f;
 
     private float startTime = 0;
+    private bool isInsideVirtualJoystickSpace = false;
 
     protected override void Start()
     {
@@ -39,12 +42,21 @@ public class CameraMotor : CustomMonobehaviour
 
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            touchPosition = Input.mousePosition;
+            if (RectTransformUtility.RectangleContainsScreenPoint(virtualJoystickSpace, Input.mousePosition))
+                this.isInsideVirtualJoystickSpace = true;
+            else
+                this.touchPosition = Input.mousePosition;
         }
 
         if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
         {
-            float swipeForce = touchPosition.x - Input.mousePosition.x;
+            if (this.isInsideVirtualJoystickSpace)
+            {
+                this.isInsideVirtualJoystickSpace = false;
+                return;
+            }
+
+            float swipeForce = this.touchPosition.x - Input.mousePosition.x;
             if (Mathf.Abs(swipeForce) > swipeResistance)
             {
                 if (swipeForce < 0)
