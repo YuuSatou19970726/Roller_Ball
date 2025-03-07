@@ -7,10 +7,17 @@ using UnityEngine.UI;
 
 public class LevelManager : CustomMonobehaviour
 {
+    private const float TIME_BEFORE_START = 3.0f;
+
     private static LevelManager instance;
     public static LevelManager Instance => instance;
 
-    public GameObject pauseMenu;
+    [SerializeField]
+    private GameObject pauseMenu;
+    [SerializeField]
+    private GameObject endMenu;
+    [SerializeField]
+    private Text endTimerText;
     [SerializeField]
     private Transform respawnSpoint;
     [SerializeField]
@@ -32,6 +39,7 @@ public class LevelManager : CustomMonobehaviour
             Destroy(gameObject);
 
         this.pauseMenu.SetActive(false);
+        this.endMenu.SetActive(false);
         this.startTime = Time.time;
 
         this.player.transform.position = this.respawnSpoint.position;
@@ -39,6 +47,9 @@ public class LevelManager : CustomMonobehaviour
 
     protected override void Update()
     {
+        if (Time.time - this.startTime < TIME_BEFORE_START)
+            return;
+
         if (player.transform.position.y < -10.0f)
             GameOver();
 
@@ -58,7 +69,7 @@ public class LevelManager : CustomMonobehaviour
 
     private void UpdateTimer()
     {
-        levelDuration = Time.time - startTime;
+        this.levelDuration = Time.time - (startTime + TIME_BEFORE_START);
         string minutes = ((int)this.levelDuration / 60).ToString("00");
         string seconds = (this.levelDuration % 60).ToString("00.00");
         this.timerText.text = minutes + ":" + seconds;
@@ -96,12 +107,35 @@ public class LevelManager : CustomMonobehaviour
     {
         if (GameManager.Instance == null) return;
 
+        foreach (Transform transform in this.endMenu.transform.parent)
+        {
+            transform.gameObject.SetActive(false);
+        }
+
+        this.endMenu.SetActive(true);
+        Rigidbody rigidbody = this.player.GetComponent<Rigidbody>();
+        // rigidbody.velocity = Vector3.zero;
+        // rigidbody.angularVelocity = Vector3.zero;
+        // rigidbody.useGravity = false;
+        rigidbody.constraints = RigidbodyConstraints.FreezePosition;
+
+        this.endTimerText.text = this.timerText.text;
+
         if (this.levelDuration < goldTime)
+        {
             GameManager.Instance.currency += 50;
+            this.endTimerText.color = Color.yellow;
+        }
         else if (this.levelDuration < silverTime)
+        {
             GameManager.Instance.currency += 25;
+            this.endTimerText.color = Color.gray;
+        }
         else
+        {
             GameManager.Instance.currency += 10;
+            this.endTimerText.color = new Color(0.8f, 0.5f, 0.2f, 1.0f);
+        }
 
         GameManager.Instance.SavePlayerPrefs();
 
@@ -117,7 +151,6 @@ public class LevelManager : CustomMonobehaviour
         saveString += '&';
         saveString += goldTime.ToString();
         PlayerPrefs.SetString(SceneManager.GetActiveScene().name, saveString);
-        SceneManager.LoadScene(SceneTags.MAIN_MENU);
     }
 
     public void GameOver()

@@ -7,6 +7,8 @@ namespace RollerBall
 {
     public class Motor : CustomMonobehaviour
     {
+        private const float TIME_BEFORE_START = 3.0f;
+
         private float moveSpeed = 5.0f;
         private float drag = 0.5f;
         private float terminalRotationSpeed = 25.0f;
@@ -19,10 +21,13 @@ namespace RollerBall
         private Rigidbody controller;
         private Transform camTransform;
 
+        private float startTime = 0;
+
         // Start is called before the first frame update
         protected override void Start()
         {
             this.lastBoost = Time.time - boostCooldown;
+            this.startTime = Time.time;
 
             this.controller = GetComponent<Rigidbody>();
             this.controller.maxAngularVelocity = terminalRotationSpeed;
@@ -32,6 +37,9 @@ namespace RollerBall
         // Update is called once per frame
         protected override void Update()
         {
+            if (Time.time - this.startTime < TIME_BEFORE_START)
+                return;
+
             Movement();
         }
 
@@ -64,6 +72,9 @@ namespace RollerBall
 
         public void Boost()
         {
+            if (Time.time - this.startTime < TIME_BEFORE_START)
+                return;
+
             if (Time.time - lastBoost > boostCooldown)
             {
                 lastBoost = Time.time;

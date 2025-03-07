@@ -21,6 +21,7 @@ public class ClampRectTransform : MonoBehaviour
     void Start()
     {
         this.rectTransform = GetComponent<RectTransform>();
+        this.rectTransform.localPosition = new Vector3(100, this.rectTransform.localPosition.y, this.rectTransform.localPosition.z);
     }
 
     // Update is called once per frame
